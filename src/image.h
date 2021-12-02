@@ -28,7 +28,9 @@ public:
 
 void Image::write_file(const char *file_name)
 {
+    stbi_flip_vertically_on_write(true);
     stbi_write_jpg(file_name, width, height, 3, data, 100);
+    free(data);
 }
 
 bool Image::set_pixel(unsigned int x, unsigned int y, ColorRGB color)
@@ -42,7 +44,7 @@ bool Image::set_pixel(unsigned int x, unsigned int y, ColorRGB color)
 
 Image::Image(unsigned int width, unsigned int height)
 {
-    this->data = (unsigned char *)malloc(width * height * 3);
+    this->data = (unsigned char *)calloc(width * height * 3, sizeof(unsigned char));
     this->width = width;
     this->height = height;
 }

@@ -1,20 +1,21 @@
 #include <iostream>
 #include "image.h"
-#define IMG_WIDHT  8
-#define IMG_HEIGHT 8
+#include "model.h"
 
-ColorRGB color_red = ColorRGB(255,0,0);
+#define IMG_WIDHT 800
+#define IMG_HEIGHT 800
+
+ColorRGB color_red = ColorRGB(255, 0, 0);
+ColorRGB color_black = ColorRGB(0, 0, 0);
+Image *img1;
+Model dummy_model;
+
+
 
 int main()
 {
-    Image img1 = Image(IMG_WIDHT, IMG_HEIGHT);
-    for (size_t i = 0; i <IMG_HEIGHT; i++)
-    {
-        for (size_t j = 0; j < IMG_WIDHT; j++)
-        {
-            img1.set_pixel(i,j,color_red);
-        }
-    }
-
-    img1.write_file("red_image.jpeg");
+    img1 = new Image(IMG_WIDHT, IMG_HEIGHT);
+    dummy_model = Model("african_head.obj");
+    dummy_model.draw(img1,color_red);
+    img1->write_file("red_image.jpeg");
 }
