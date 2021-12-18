@@ -1,7 +1,10 @@
 #pragma once
-#include "tiny_obj_loader.h"
-#include "image.h"
+#include "frame.h"
+#include "renderer.h"
+#define TINYOBJLOADER_IMPLEMENTATION
+#include "tiny_obj_loader/tiny_obj_loader.h"
 #include <string.h>
+#include <glm/glm.hpp>
 
 class Model
 {
@@ -11,21 +14,16 @@ private:
     tinyobj::ObjReader reader;
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
-    Image *frame;
-
-    /* function */
-    void plot_line(int x0, int y0, int x1, int y1, ColorRGB color);
 
 public:
     Model();
     Model(std::string inputfile);
     ~Model();
-    void draw(Image *frame, ColorRGB color);
+    void draw(Frame &image);
 };
 
-void Model::draw(Image *frame, ColorRGB color)
+void Model::draw(Frame &image)
 {
-    this->frame = frame;
     // Loop over shapes
     for (size_t s = 0; s < shapes.size(); s++)
     {
@@ -34,7 +32,8 @@ void Model::draw(Image *frame, ColorRGB color)
         for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
         {
             size_t fv = size_t(shapes[s].mesh.num_face_vertices[f]);
-            tinyobj::real_t triangle_vertices[6];
+            glm::vec3 triangle_vertices[3];
+            ColorRGB color_normal = ColorRGB(0, 0, 0);
             // Loop over vertices in the face.
             for (size_t v = 0; v < fv; v++)
             {
@@ -44,8 +43,8 @@ void Model::draw(Image *frame, ColorRGB color)
                 tinyobj::real_t vy = attrib.vertices[3 * size_t(idx.vertex_index) + 1];
                 tinyobj::real_t vz = attrib.vertices[3 * size_t(idx.vertex_index) + 2];
 
-                triangle_vertices[v * 2 + 0] = int((vx + 1.0) * 399);
-                triangle_vertices[v * 2 + 1] = int((vy + 1.0) * 399);
+                //viewport transformation
+                triangle_vertices[v] = glm::vec3(vx, vy, vz);
 
                 // Check if `normal_index` is zero or positive. negative = no normal data
                 if (idx.normal_index >= 0)
@@ -53,6 +52,9 @@ void Model::draw(Image *frame, ColorRGB color)
                     tinyobj::real_t nx = attrib.normals[3 * size_t(idx.normal_index) + 0];
                     tinyobj::real_t ny = attrib.normals[3 * size_t(idx.normal_index) + 1];
                     tinyobj::real_t nz = attrib.normals[3 * size_t(idx.normal_index) + 2];
+                    color_normal = ColorRGB((char)((nx + 1) / 2 * 255),
+                                            (char)((ny + 1) / 2 * 255),
+                                            (char)((nz + 1) / 2 * 255));
                 }
 
                 // Check if `texcoord_index` is zero or positive. negative = no texcoord data
@@ -63,9 +65,9 @@ void Model::draw(Image *frame, ColorRGB color)
                 }
             }
             //draw triangle
-            plot_line(triangle_vertices[0], triangle_vertices[1], triangle_vertices[2], triangle_vertices[3], color);
-            plot_line(triangle_vertices[2], triangle_vertices[3], triangle_vertices[4], triangle_vertices[5], color);
-            plot_line(triangle_vertices[4], triangle_vertices[5], triangle_vertices[0], triangle_vertices[1], color);
+            draw_triangle(triangle_vertices[0],
+                          triangle_vertices[1],
+                          triangle_vertices[2], image, color_normal);
 
             index_offset += fv;
         }
@@ -95,31 +97,6 @@ Model::Model(std::string inputfile)
     shapes = reader.GetShapes();
 }
 
-//bresenham line drawing algorithm
-void Model::plot_line(int x0, int y0, int x1, int y1, ColorRGB color)
-{
-    int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
-    int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
-    int err = dx + dy, e2; /* error value e_xy */
-
-    for (;;)
-    { /* loop */
-        this->frame->set_pixel(x0, y0, color);
-        if (x0 == x1 && y0 == y1)
-            break;
-        e2 = 2 * err;
-        if (e2 >= dy)
-        {
-            err += dy;
-            x0 += sx;
-        } /* e_xy+e_x > 0 */
-        if (e2 <= dx)
-        {
-            err += dx;
-            y0 += sy;
-        } /* e_xy+e_y < 0 */
-    }
-}
 Model::~Model()
 {
 }
