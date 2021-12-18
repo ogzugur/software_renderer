@@ -69,8 +69,8 @@ glm::vec3 barycentric(glm::vec2 p, glm::vec2 a, glm::vec2 b, glm::vec2 c)
 
 void viewportTransform(glm::vec3 &p, int viewport_width, int viewport_height)
 {
-    p.x = (int)(((p.x + 1) / 2 * viewport_width) - 1);
-    p.y = (int)(((-p.y + 1) / 2 * viewport_height) - 1);
+    p.x = (int)(((p.x + 1) / 2 * (viewport_width - 1)));
+    p.y = (int)(((-p.y + 1) / 2 * (viewport_height - 1)));
 }
 
 float calculatePixelDepth(const glm::vec3 bc_screen,
