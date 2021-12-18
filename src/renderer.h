@@ -1,19 +1,30 @@
 #pragma once
 #include <algorithm>
 #include <glm/glm.hpp>
+#include "utility_structs.h"
+#include "texture.h"
 
-void plot_line(glm::vec2 p0, glm::vec2 p1, ColorRGB color, Frame &frame);
+void plotLine(glm::vec2 p0, glm::vec2 p1, ogz_util::ColorRGB color, Frame &frame);
 glm::vec3 barycentric(glm::vec2 p, glm::vec2 a, glm::vec2 b, glm::vec2 c);
-void viewport_transform(glm::vec3 &p, int viewport_width, int viewport_height);
-void draw_triangle(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, Frame &image, ColorRGB color);
-float calculate_pixel_depth(const glm::vec3 bc_screen,
-                            const glm::vec3 p0,
-                            const glm::vec3 p1,
-                            const glm::vec3 p2);
+void viewportTransform(glm::vec3 &p, int viewport_width, int viewport_height);
+void drawTriangle(ogz_util::VertexData p0,
+                  ogz_util::VertexData p1,
+                  ogz_util::VertexData p2,
+                  Frame &image,
+                  Texture &texture);
 
+float calculatePixelDepth(const glm::vec3 bc_screen,
+                          const glm::vec3 p0,
+                          const glm::vec3 p1,
+                          const glm::vec3 p2);
+
+glm::vec2 calculatePixelTexCoord(const glm::vec3 bc_screen,
+                                 const glm::vec2 t0,
+                                 const glm::vec2 t1,
+                                 const glm::vec2 t2);
 
 //bresenham line drawing algorithm
-void plot_line(glm::vec2 p0, glm::vec2 p1, ColorRGB color, Frame &frame)
+void plotLine(glm::vec2 p0, glm::vec2 p1, ogz_util::ColorRGB color, Frame &frame)
 {
     int dx = abs(p1.x - p0.x), sx = p0.x < p1.x ? 1 : -1;
     int dy = -abs(p1.y - p0.y), sy = p0.y < p1.y ? 1 : -1;
@@ -21,7 +32,7 @@ void plot_line(glm::vec2 p0, glm::vec2 p1, ColorRGB color, Frame &frame)
 
     for (;;)
     { /* loop */
-        frame.set_pixel(p0.x, p0.y, color);
+        frame.setPixel(p0.x, p0.y, color);
         if (p0.x == p1.x && p0.y == p1.y)
             break;
         e2 = 2 * err;
@@ -56,16 +67,16 @@ glm::vec3 barycentric(glm::vec2 p, glm::vec2 a, glm::vec2 b, glm::vec2 c)
     return glm::vec3(u, v, w);
 }
 
-void viewport_transform(glm::vec3 &p, int viewport_width, int viewport_height)
+void viewportTransform(glm::vec3 &p, int viewport_width, int viewport_height)
 {
     p.x = (int)(((p.x + 1) / 2 * viewport_width) - 1);
     p.y = (int)(((-p.y + 1) / 2 * viewport_height) - 1);
 }
 
-float calculate_pixel_depth(const glm::vec3 bc_screen,
-                            const glm::vec3 p0,
-                            const glm::vec3 p1,
-                            const glm::vec3 p2)
+float calculatePixelDepth(const glm::vec3 bc_screen,
+                          const glm::vec3 p0,
+                          const glm::vec3 p1,
+                          const glm::vec3 p2)
 {
     float pixel_depth = 0;
     pixel_depth = p0.z * bc_screen.x +
@@ -75,41 +86,57 @@ float calculate_pixel_depth(const glm::vec3 bc_screen,
     return pixel_depth;
 }
 
-
-void draw_triangle(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, Frame &image, ColorRGB color)
+glm::vec2 calculatePixelTexCoord(const glm::vec3 bc_screen,
+                                 const glm::vec2 t0,
+                                 const glm::vec2 t1,
+                                 const glm::vec2 t2)
 {
-    viewport_transform(p0, image.get_width(), image.get_height());
-    viewport_transform(p1, image.get_width(), image.get_height());
-    viewport_transform(p2, image.get_width(), image.get_height());
+    glm::vec2 texCoord;
+    texCoord.x = t0.x * bc_screen.x +
+                 t1.x * bc_screen.y +
+                 t2.x * bc_screen.z;
 
-    glm::vec2 bboxmin(image.get_width() - 1, image.get_height() - 1);
+    texCoord.y = t0.y * bc_screen.x +
+                 t1.y * bc_screen.y +
+                 t2.y * bc_screen.z;
+
+    return texCoord;
+}
+
+void drawTriangle(ogz_util::VertexData p0, ogz_util::VertexData p1, ogz_util::VertexData p2, Frame &image, Texture &texture)
+{
+    viewportTransform(p0.vertex_pos, image.getWidth(), image.getHeight());
+    viewportTransform(p1.vertex_pos, image.getWidth(), image.getHeight());
+    viewportTransform(p2.vertex_pos, image.getWidth(), image.getHeight());
+
+    glm::vec2 bboxmin(image.getWidth() - 1, image.getHeight() - 1);
     glm::vec2 bboxmax(0, 0);
-    glm::vec2 clamp(image.get_width() - 1, image.get_height() - 1);
+    glm::vec2 clamp(image.getWidth() - 1, image.getHeight() - 1);
 
-    bboxmin.x = std::min(p0.x, std::min(p1.x, p2.x));
-    bboxmax.x = std::max(p0.x, std::max(p1.x, p2.x));
+    bboxmin.x = std::min(p0.vertex_pos.x, std::min(p1.vertex_pos.x, p2.vertex_pos.x));
+    bboxmax.x = std::max(p0.vertex_pos.x, std::max(p1.vertex_pos.x, p2.vertex_pos.x));
 
-    bboxmin.y = std::min(p0.y, std::min(p1.y, p2.y));
-    bboxmax.y = std::max(p0.y, std::max(p1.y, p2.y));
+    bboxmin.y = std::min(p0.vertex_pos.y, std::min(p1.vertex_pos.y, p2.vertex_pos.y));
+    bboxmax.y = std::max(p0.vertex_pos.y, std::max(p1.vertex_pos.y, p2.vertex_pos.y));
 
     glm::vec3 P;
+    glm::vec2 pixelTexCoord;
     for (P.x = bboxmin.x; P.x <= bboxmax.x; P.x++)
     {
         for (P.y = bboxmin.y; P.y <= bboxmax.y; P.y++)
         {
-            float pixel_depth_value = image.get_depth_buffer_value(P.x, P.y);
-            glm::vec3 bc_screen = barycentric(P, p0, p1, p2);
+            float pixel_depth_value = image.getDepthBufferValue(P.x, P.y);
+            glm::vec3 bc_screen = barycentric(P, p0.vertex_pos, p1.vertex_pos, p2.vertex_pos);
             if (bc_screen.x < 0 || bc_screen.y < 0 || bc_screen.z < 0)
                 continue;
-            P.z = calculate_pixel_depth(bc_screen, p0, p1, p2);
+            P.z = calculatePixelDepth(bc_screen, p0.vertex_pos, p1.vertex_pos, p2.vertex_pos);
+            pixelTexCoord = calculatePixelTexCoord(bc_screen, p0.vertex_tex_coord, p1.vertex_tex_coord, p2.vertex_tex_coord);
 
             if (pixel_depth_value < P.z)
             {
-                image.set_dept_buffer_value(P.x, P.y, P.z);
-                image.set_pixel(P.x, P.y, color);
+                image.setDepthBufferValue(P.x, P.y, P.z);
+                image.setPixel(P.x, P.y, texture.getColorValueByUV(pixelTexCoord.x, pixelTexCoord.y));
             }
         }
     }
 }
-
-

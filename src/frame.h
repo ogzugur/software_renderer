@@ -1,16 +1,9 @@
 #pragma once
-#define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb/stb_image_write.h>
 #include <iostream>
-
-struct ColorRGB
-{
-    unsigned char r, g, b;
-    ColorRGB(unsigned char R, unsigned char G, unsigned char B) : b(B), g(G), r(R) {}
-};
-
+#include "utility_structs.h"
 class Frame
 {
 private:
@@ -23,22 +16,22 @@ public:
     Frame(unsigned int width, unsigned int height);
     ~Frame();
 
-    bool set_pixel(unsigned int x, unsigned int y, ColorRGB color);
-    void set_dept_buffer_value(unsigned x, unsigned y, float depth_value);
-    float get_depth_buffer_value(unsigned x, unsigned y);
-    void write_file(const char *file_name, bool is_flipped = false);
-    int get_width();
-    int get_height();
+    bool setPixel(unsigned int x, unsigned int y, ogz_util::ColorRGB color);
+    void setDepthBufferValue(unsigned x, unsigned y, float depth_value);
+    float getDepthBufferValue(unsigned x, unsigned y);
+    void writeFile(const char *file_name, bool is_flipped = false);
+    int getWidth();
+    int getHeight();
 };
 
-void Frame::write_file(const char *file_name, bool is_flipped)
+void Frame::writeFile(const char *file_name, bool is_flipped)
 {
     stbi_flip_vertically_on_write(is_flipped);
     stbi_write_png(file_name, width, height, 3, color_buffer, width * 3);
     free(color_buffer);
 }
 
-bool Frame::set_pixel(unsigned int x, unsigned int y, ColorRGB color)
+bool Frame::setPixel(unsigned int x, unsigned int y, ogz_util::ColorRGB color)
 {
     *(this->color_buffer + 3 * (y * width + x)) = color.r;
     *(this->color_buffer + 3 * (y * width + x) + 1) = color.g;
@@ -47,22 +40,22 @@ bool Frame::set_pixel(unsigned int x, unsigned int y, ColorRGB color)
     return true;
 }
 
-void Frame::set_dept_buffer_value(unsigned x, unsigned y, float depth_value)
+void Frame::setDepthBufferValue(unsigned x, unsigned y, float depth_value)
 {
     *(this->depth_buffer + (y * width + x)) = depth_value;
 }
 
-float Frame::get_depth_buffer_value(unsigned x, unsigned y)
+float Frame::getDepthBufferValue(unsigned x, unsigned y)
 {
     return *(this->depth_buffer + (y * width + x));
 }
 
-int Frame::get_width()
+int Frame::getWidth()
 {
     return width;
 }
 
-int Frame::get_height()
+int Frame::getHeight()
 {
     return height;
 }
@@ -71,7 +64,8 @@ Frame::Frame(unsigned int width, unsigned int height)
 {
     this->color_buffer = (unsigned char *)calloc(width * height * 3, sizeof(unsigned char));
     this->depth_buffer = (float *)calloc(width * height, sizeof(float));
-    for (int i=width*height; i--; depth_buffer[i] = -std::numeric_limits<float>::max());
+    for (int i = width * height; i--; depth_buffer[i] = -std::numeric_limits<float>::max())
+        ;
     this->width = width;
     this->height = height;
 }
