@@ -13,8 +13,8 @@ Texture texture;
 int main()
 {
     frame = new Frame(IMG_WIDHT, IMG_HEIGHT);
-    texture = Texture("resources/models/diablo3_pose_diffuse.tga");
-    dummy_model = Model("resources/models/diablo.obj");
+    texture = Texture("C:/dev/software_renderer/resources/models/african_head_diffuse.tga");
+    dummy_model = Model("C:/dev/software_renderer/resources/models/african_head.obj");
     dummy_model.draw(*frame, texture);
     frame->writeFile("final_image.png");
 }
