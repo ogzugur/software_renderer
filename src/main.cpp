@@ -16,5 +16,5 @@ int main()
     texture = Texture("resources/models/african_head_diffuse.tga");
     dummy_model = Model("resources/models/african_head.obj");
     dummy_model.draw(*frame, texture);
-    frame->writeFile("final_image.png",true);
+    frame->writeFile("final_image.png", true);
 }
