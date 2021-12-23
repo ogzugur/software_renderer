@@ -65,7 +65,7 @@ glm::vec3 barycentric(glm::vec2 p, glm::vec2 a, glm::vec2 b, glm::vec2 c)
 void viewportTransform(glm::vec3 &p, int viewport_width, int viewport_height)
 {
     p.x = (int)((p.x + 1) / 2 * (viewport_width - 1));
-    p.y = (int)((-p.y + 1) / 2 * (viewport_height - 1));
+    p.y = (int)((p.y + 1) / 2 * (viewport_height - 1));
 }
 
 float calculatePixelDepth(const glm::vec3 bc_screen,
@@ -100,6 +100,19 @@ glm::vec2 calculatePixelTexCoord(const glm::vec3 bc_screen,
 
 void drawTriangle(ogz_util::VertexData p0, ogz_util::VertexData p1, ogz_util::VertexData p2, Frame &image, Texture &texture)
 {
+    glm::mat4 modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f,0.0f,-3.0f));
+    glm::mat4 viewMatrix = glm::lookAtRH(glm::vec3(0.0,0.0,0.0),glm::vec3(0.0,0.0,-3.0),glm::vec3(0.0,1.0,0.0));
+    glm::mat4 projectionMatrix = glm::perspectiveRH(glm::radians(60.0f),1.0f,-0.1f, -10.0f);
+    
+    glm::vec4 p0_4d = projectionMatrix * viewMatrix * modelMatrix * glm::vec4(p0.vertex_pos, 1.0f);
+    glm::vec4 p1_4d = projectionMatrix * viewMatrix * modelMatrix * glm::vec4(p1.vertex_pos, 1.0f);
+    glm::vec4 p2_4d = projectionMatrix * viewMatrix * modelMatrix * glm::vec4(p2.vertex_pos, 1.0f);
+
+    p0.vertex_pos = glm::vec3(p0_4d)/p0_4d.w;
+    p1.vertex_pos = glm::vec3(p1_4d)/p1_4d.w;
+    p2.vertex_pos = glm::vec3(p2_4d)/p2_4d.w;
+
     viewportTransform(p0.vertex_pos, image.getWidth(), image.getHeight());
     viewportTransform(p1.vertex_pos, image.getWidth(), image.getHeight());
     viewportTransform(p2.vertex_pos, image.getWidth(), image.getHeight());
