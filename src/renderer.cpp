@@ -64,8 +64,8 @@ glm::vec3 barycentric(glm::vec2 p, glm::vec2 a, glm::vec2 b, glm::vec2 c)
 
 void viewportTransform(glm::vec3 &p, int viewport_width, int viewport_height)
 {
-    p.x = (int)(((p.x + 1) / 2 * (viewport_width - 1)));
-    p.y = (int)(((-p.y + 1) / 2 * (viewport_height - 1)));
+    p.x = (int)((p.x + 1) / 2 * (viewport_width - 1));
+    p.y = (int)((-p.y + 1) / 2 * (viewport_height - 1));
 }
 
 float calculatePixelDepth(const glm::vec3 bc_screen,
@@ -108,11 +108,11 @@ void drawTriangle(ogz_util::VertexData p0, ogz_util::VertexData p1, ogz_util::Ve
     glm::vec2 bboxmax(0, 0);
     glm::vec2 clamp(image.getWidth() - 1, image.getHeight() - 1);
 
-    bboxmin.x = std::min(p0.vertex_pos.x, std::min(p1.vertex_pos.x, p2.vertex_pos.x));
-    bboxmax.x = std::max(p0.vertex_pos.x, std::max(p1.vertex_pos.x, p2.vertex_pos.x));
+    bboxmin.x = std::max(0.0f, std::min(p0.vertex_pos.x, std::min(p1.vertex_pos.x, p2.vertex_pos.x)));
+    bboxmin.y = std::max(0.0f, std::min(p0.vertex_pos.y, std::min(p1.vertex_pos.y, p2.vertex_pos.y)));
 
-    bboxmin.y = std::min(p0.vertex_pos.y, std::min(p1.vertex_pos.y, p2.vertex_pos.y));
-    bboxmax.y = std::max(p0.vertex_pos.y, std::max(p1.vertex_pos.y, p2.vertex_pos.y));
+    bboxmax.x = std::min(clamp.x, std::max(p0.vertex_pos.x, std::max(p1.vertex_pos.x, p2.vertex_pos.x)));
+    bboxmax.y = std::min(clamp.y, std::max(p0.vertex_pos.y, std::max(p1.vertex_pos.y, p2.vertex_pos.y)));
 
     glm::vec3 P;
     glm::vec2 pixelTexCoord;
