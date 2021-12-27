@@ -7,6 +7,7 @@ add_executable(TinyRenderer src/main.cpp
                             src/model.cpp
                             src/renderer.cpp
                             src/texture.cpp
+                            src/camera.cpp
                             dependencies/stb/stb_image.cpp
                             dependencies/stb/stb_image_write.cpp
                             dependencies/tiny_obj_loader/tiny_obj_loader.cpp)

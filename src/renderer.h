@@ -2,9 +2,35 @@
 #include "utility_structs.h"
 #include "texture.h"
 #include "frame.h"
+#include "camera.h"
+#include "model.h"
 
-void drawTriangle(ogz_util::VertexData p0,
-                  ogz_util::VertexData p1,
-                  ogz_util::VertexData p2,
-                  Frame &image,
-                  Texture &texture);
+class Renderer
+{
+private:
+    glm::vec3 barycentric(glm::vec2 p, glm::vec2 a, glm::vec2 b, glm::vec2 c);
+    void viewportTransform(glm::vec3 &p, int viewport_width, int viewport_height);
+    void plotLine(glm::vec2 p0, glm::vec2 p1, ogz_util::ColorRGB color);
+
+    float calculatePixelDepth(const glm::vec3 bc_screen,
+                              const glm::vec3 p0,
+                              const glm::vec3 p1,
+                              const glm::vec3 p2);
+
+    glm::vec2 calculatePixelTexCoord(const glm::vec3 bc_screen,
+                                     const glm::vec2 t0,
+                                     const glm::vec2 t1,
+                                     const glm::vec2 t2);
+    void drawTriangle(ogz_util::VertexData p0,
+                      ogz_util::VertexData p1,
+                      ogz_util::VertexData p2,
+                      Texture &texture);
+
+public:
+    Camera *camera;
+    Frame *frame;
+
+    Renderer(Camera &camera, Frame &frame);
+    ~Renderer();
+    void drawModel(Model &model);
+};

@@ -11,13 +11,14 @@ private:
     /* data */
     std::string inputfile;
     tinyobj::ObjReader reader;
-    tinyobj::attrib_t attrib;
-    std::vector<tinyobj::shape_t> shapes;
 
 public:
     Model();
     Model(std::string inputfile);
     ~Model();
-    void draw(Frame &image, Texture &texture);
+    Texture *texture;
+    tinyobj::attrib_t attrib;
+    std::vector<tinyobj::shape_t> shapes;
 };
 
+ 
