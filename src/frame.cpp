@@ -35,6 +35,14 @@ int Frame::getHeight()
     return height;
 }
 
+void Frame::clearDepthColor()
+{
+    free(color_buffer);
+    free(depth_buffer);
+    this->color_buffer = (unsigned char *)calloc(width * height * 3, sizeof(unsigned char));
+    this->depth_buffer = (float *)calloc(width * height, sizeof(float));
+}
+
 Frame::Frame(unsigned int width, unsigned int height)
 {
     this->color_buffer = (unsigned char *)calloc(width * height * 3, sizeof(unsigned char));

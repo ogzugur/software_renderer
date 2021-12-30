@@ -5,10 +5,10 @@
 class Texture
 {
 private:
-    unsigned char *texture_data;
     int width, height, nrChannels;
 
 public:
+    unsigned char *texture_data;
     Texture(/* args */);
     Texture(const char *file_name);
     ~Texture();

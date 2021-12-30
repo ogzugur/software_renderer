@@ -10,15 +10,16 @@ private:
     /* data */
     float *depth_buffer;
     unsigned int width, height;
-    unsigned char *color_buffer;
 
 public:
+    unsigned char *color_buffer;
     Frame();
     Frame(unsigned int width, unsigned int height);
     ~Frame();
 
     int getWidth();
     int getHeight();
+    void clearDepthColor();
     float getDepthBufferValue(unsigned x, unsigned y);
     void writeFile(const char *file_name, bool is_flipped = false);
     void setDepthBufferValue(unsigned x, unsigned y, float depth_value);

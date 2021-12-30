@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -20,6 +20,7 @@ private:
     float cameraFar;
 
 public:
+    Camera(){};
     Camera(unsigned int viewportWidth, unsigned int viewportHeight);
     ~Camera();
 
@@ -29,4 +30,3 @@ public:
     glm::mat4 getCameraViewMatrix();
     glm::mat4 getCameraViewportMatrix();
 };
-

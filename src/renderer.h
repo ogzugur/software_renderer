@@ -4,6 +4,7 @@
 #include "frame.h"
 #include "camera.h"
 #include "model.h"
+#include "shader.h"
 
 class Renderer
 {
@@ -26,10 +27,14 @@ private:
                       ogz_util::VertexData p2,
                       Texture &texture);
 
+    float rotateValue = 0;
+
 public:
     Camera *camera;
     Frame *frame;
+    Shader rendererShader;
 
+    Renderer(){};
     Renderer(Camera &camera, Frame &frame);
     ~Renderer();
     void drawModel(Model &model);

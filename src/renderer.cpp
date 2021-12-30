@@ -15,6 +15,7 @@ Renderer::~Renderer()
 
 void Renderer::drawModel(Model &model)
 {
+    rotateValue += 2;
     // Loop over shapes
     for (size_t s = 0; s < model.shapes.size(); s++)
     {
@@ -145,18 +146,19 @@ glm::vec2 Renderer::calculatePixelTexCoord(const glm::vec3 bc_screen,
 void Renderer::drawTriangle(ogz_util::VertexData p0, ogz_util::VertexData p1, ogz_util::VertexData p2, Texture &texture)
 {
     glm::mat4 modelMatrix = glm::mat4(1.0f);
-    modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, -2.0f));
+    
+    modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, -0.5f, -2.0));
+    modelMatrix = glm::rotate(modelMatrix,glm::radians(rotateValue),glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 viewMatrix = camera->getCameraViewMatrix();
     glm::mat4 projectionMatrix = camera->getCameraProjectionMatrix();
-    glm::mat4 viewportMatrix = camera ->getCameraViewportMatrix();
 
-    glm::vec4 p0_4d = projectionMatrix * viewMatrix * modelMatrix * glm::vec4(p0.vertex_pos, 1.0f);
-    glm::vec4 p1_4d = projectionMatrix * viewMatrix * modelMatrix * glm::vec4(p1.vertex_pos, 1.0f);
-    glm::vec4 p2_4d = projectionMatrix * viewMatrix * modelMatrix * glm::vec4(p2.vertex_pos, 1.0f);
+    rendererShader.modelMatrix = modelMatrix;
+    rendererShader.viewMatrix = viewMatrix;
+    rendererShader.projectionMatrix = projectionMatrix;
 
-    p0.vertex_pos = glm::vec3(p0_4d) / p0_4d.w;
-    p1.vertex_pos = glm::vec3(p1_4d) / p1_4d.w;
-    p2.vertex_pos = glm::vec3(p2_4d) / p2_4d.w;
+    rendererShader.vertexShader(p0);
+    rendererShader.vertexShader(p1);
+    rendererShader.vertexShader(p2);
 
     viewportTransform(p0.vertex_pos, this->frame->getWidth(), this->frame->getHeight());
     viewportTransform(p1.vertex_pos, this->frame->getWidth(), this->frame->getHeight());
