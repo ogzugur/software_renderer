@@ -15,64 +15,32 @@ Renderer::~Renderer()
 
 void Renderer::drawModel(Model &model)
 {
-    rotateValue += 2;
+    rotateValue += 1;
+
     // Loop over shapes
-    for (size_t s = 0; s < model.shapes.size(); s++)
+    for (size_t s = 0; s < model.meshes.size(); s++)
     {
-        // Loop over faces(polygon)
-        size_t index_offset = 0;
-        for (size_t f = 0; f < model.shapes[s].mesh.num_face_vertices.size(); f++)
+        for (size_t i = 0; i < model.meshes[s].vertices.size(); i = i + 3)
         {
-            size_t fv = size_t(model.shapes[s].mesh.num_face_vertices[f]);
-            ogz_util::VertexData triangle_vertices[3];
-            // Loop over vertices in the face.
-            for (size_t v = 0; v < fv; v++)
-            {
-                // access to vertex
-                tinyobj::index_t idx = model.shapes[s].mesh.indices[index_offset + v];
-                tinyobj::real_t vx = model.attrib.vertices[3 * size_t(idx.vertex_index) + 0];
-                tinyobj::real_t vy = model.attrib.vertices[3 * size_t(idx.vertex_index) + 1];
-                tinyobj::real_t vz = model.attrib.vertices[3 * size_t(idx.vertex_index) + 2];
-
-                //viewport transformation
-                triangle_vertices[v].vertex_pos = glm::vec3(vx, vy, vz);
-
-                // Check if `normal_index` is zero or positive. negative = no normal data
-                if (idx.normal_index >= 0)
-                {
-                    tinyobj::real_t nx = model.attrib.normals[3 * size_t(idx.normal_index) + 0];
-                    tinyobj::real_t ny = model.attrib.normals[3 * size_t(idx.normal_index) + 1];
-                    tinyobj::real_t nz = model.attrib.normals[3 * size_t(idx.normal_index) + 2];
-                }
-
-                // Check if `texcoord_index` is zero or positive. negative = no texcoord data
-                if (idx.texcoord_index >= 0)
-                {
-                    tinyobj::real_t tx = model.attrib.texcoords[2 * size_t(idx.texcoord_index) + 0];
-                    tinyobj::real_t ty = model.attrib.texcoords[2 * size_t(idx.texcoord_index) + 1];
-                    triangle_vertices[v].vertex_tex_coord = glm::vec2(tx, ty);
-                }
-            }
             //draw triangle
-            drawTriangle(triangle_vertices[0],
-                         triangle_vertices[1],
-                         triangle_vertices[2], *model.texture);
-
-            index_offset += fv;
+            rendererShader.textureDiffuse = &model.meshes[s].textures[0];
+            drawTriangle(model.meshes[s].vertices[i + 0],
+                         model.meshes[s].vertices[i + 1],
+                         model.meshes[s].vertices[i + 2], model.meshes[s].textures[0]);
         }
     }
 }
 
 //bresenham line drawing algorithm
-void Renderer::plotLine(glm::vec2 p0, glm::vec2 p1, ogz_util::ColorRGB color)
+void Renderer::plotLine(glm::vec2 p0, glm::vec2 p1, glm::vec3 color)
 {
-    int dx = abs(p1.x - p0.x), sx = p0.x < p1.x ? 1 : -1;
-    int dy = -abs(p1.y - p0.y), sy = p0.y < p1.y ? 1 : -1;
+    int dx = (int)abs(p1.x - p0.x), sx = p0.x < p1.x ? 1 : -1;
+    int dy = -(int)abs(p1.y - p0.y), sy = p0.y < p1.y ? 1 : -1;
     int err = dx + dy, e2; /* error value e_xy */
 
     for (;;)
     { /* loop */
-        frame->setPixel(p0.x, p0.y, color);
+        frame->setPixel((unsigned int)p0.x, (unsigned int)p0.y, color);
         if (p0.x == p1.x && p0.y == p1.y)
             break;
         e2 = 2 * err;
@@ -114,9 +82,9 @@ void Renderer::viewportTransform(glm::vec3 &p, int viewport_width, int viewport_
 }
 
 float Renderer::calculatePixelDepth(const glm::vec3 bc_screen,
-                          const glm::vec3 p0,
-                          const glm::vec3 p1,
-                          const glm::vec3 p2)
+                                    const glm::vec3 p0,
+                                    const glm::vec3 p1,
+                                    const glm::vec3 p2)
 {
     float pixel_depth = 0;
     pixel_depth = p0.z * bc_screen.x +
@@ -126,28 +94,12 @@ float Renderer::calculatePixelDepth(const glm::vec3 bc_screen,
     return pixel_depth;
 }
 
-glm::vec2 Renderer::calculatePixelTexCoord(const glm::vec3 bc_screen,
-                                           const glm::vec2 t0,
-                                           const glm::vec2 t1,
-                                           const glm::vec2 t2)
-{
-    glm::vec2 texCoord;
-    texCoord.x = t0.x * bc_screen.x +
-                 t1.x * bc_screen.y +
-                 t2.x * bc_screen.z;
-
-    texCoord.y = t0.y * bc_screen.x +
-                 t1.y * bc_screen.y +
-                 t2.y * bc_screen.z;
-
-    return texCoord;
-}
-
 void Renderer::drawTriangle(ogz_util::VertexData p0, ogz_util::VertexData p1, ogz_util::VertexData p2, Texture &texture)
 {
     glm::mat4 modelMatrix = glm::mat4(1.0f);
-    
-    modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, -0.5f, -2.0));
+    ogz_util::VertexData triangleVertices[3] = {p0,p1,p2};
+
+    modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, -2.0));
     modelMatrix = glm::rotate(modelMatrix,glm::radians(rotateValue),glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 viewMatrix = camera->getCameraViewMatrix();
     glm::mat4 projectionMatrix = camera->getCameraProjectionMatrix();
@@ -156,41 +108,39 @@ void Renderer::drawTriangle(ogz_util::VertexData p0, ogz_util::VertexData p1, og
     rendererShader.viewMatrix = viewMatrix;
     rendererShader.projectionMatrix = projectionMatrix;
 
-    rendererShader.vertexShader(p0);
-    rendererShader.vertexShader(p1);
-    rendererShader.vertexShader(p2);
+    rendererShader.vertexShader(triangleVertices);
 
-    viewportTransform(p0.vertex_pos, this->frame->getWidth(), this->frame->getHeight());
-    viewportTransform(p1.vertex_pos, this->frame->getWidth(), this->frame->getHeight());
-    viewportTransform(p2.vertex_pos, this->frame->getWidth(), this->frame->getHeight());
+    viewportTransform(triangleVertices[0].vertex_pos, this->frame->getWidth(), this->frame->getHeight());
+    viewportTransform(triangleVertices[1].vertex_pos, this->frame->getWidth(), this->frame->getHeight());
+    viewportTransform(triangleVertices[2].vertex_pos, this->frame->getWidth(), this->frame->getHeight());
 
     glm::vec2 bboxmin(this->frame->getWidth() - 1, this->frame->getHeight() - 1);
     glm::vec2 bboxmax(0, 0);
     glm::vec2 clamp(this->frame->getWidth() - 1, this->frame->getHeight() - 1);
 
-    bboxmin.x = std::max(0.0f, std::min(p0.vertex_pos.x, std::min(p1.vertex_pos.x, p2.vertex_pos.x)));
-    bboxmin.y = std::max(0.0f, std::min(p0.vertex_pos.y, std::min(p1.vertex_pos.y, p2.vertex_pos.y)));
+    bboxmin.x = std::max(0.0f, std::min(triangleVertices[0].vertex_pos.x, std::min(triangleVertices[1].vertex_pos.x, triangleVertices[2].vertex_pos.x)));
+    bboxmin.y = std::max(0.0f, std::min(triangleVertices[0].vertex_pos.y, std::min(triangleVertices[1].vertex_pos.y, triangleVertices[2].vertex_pos.y)));
 
-    bboxmax.x = std::min(clamp.x, std::max(p0.vertex_pos.x, std::max(p1.vertex_pos.x, p2.vertex_pos.x)));
-    bboxmax.y = std::min(clamp.y, std::max(p0.vertex_pos.y, std::max(p1.vertex_pos.y, p2.vertex_pos.y)));
+    bboxmax.x = std::min(clamp.x, std::max(triangleVertices[0].vertex_pos.x, std::max(triangleVertices[1].vertex_pos.x, triangleVertices[2].vertex_pos.x)));
+    bboxmax.y = std::min(clamp.y, std::max(triangleVertices[0].vertex_pos.y, std::max(triangleVertices[1].vertex_pos.y, triangleVertices[2].vertex_pos.y)));
 
     glm::vec3 P;
-    glm::vec2 pixelTexCoord;
+    glm::vec3 fragmentColor;
     for (P.x = bboxmin.x; P.x <= bboxmax.x; P.x++)
     {
         for (P.y = bboxmin.y; P.y <= bboxmax.y; P.y++)
         {
             float pixel_depth_value = this->frame->getDepthBufferValue(P.x, P.y);
-            glm::vec3 bc_screen = barycentric(P, p0.vertex_pos, p1.vertex_pos, p2.vertex_pos);
+            glm::vec3 bc_screen = barycentric(P, triangleVertices[0].vertex_pos, triangleVertices[1].vertex_pos, triangleVertices[2].vertex_pos);
             if (bc_screen.x < 0 || bc_screen.y < 0 || bc_screen.z < 0)
                 continue;
-            P.z = calculatePixelDepth(bc_screen, p0.vertex_pos, p1.vertex_pos, p2.vertex_pos);
-            pixelTexCoord = calculatePixelTexCoord(bc_screen, p0.vertex_tex_coord, p1.vertex_tex_coord, p2.vertex_tex_coord);
+            P.z = calculatePixelDepth(bc_screen, triangleVertices[0].vertex_pos, triangleVertices[1].vertex_pos, triangleVertices[2].vertex_pos);
 
             if (pixel_depth_value < P.z)
             {
                 this->frame->setDepthBufferValue(P.x, P.y, P.z);
-                this->frame->setPixel(P.x, P.y, texture.getColorValueByUV(pixelTexCoord.x, pixelTexCoord.y));
+                fragmentColor = rendererShader.fragmentShader(bc_screen);
+                this->frame->setPixel(P.x, P.y, fragmentColor);
             }
         }
     }

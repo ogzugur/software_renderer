@@ -8,14 +8,20 @@
 class Shader
 {
 private:
+    ogz_util::VertexData triangleVertices[3];
+
+    glm::vec2 calculatePixelTexCoord(const glm::vec3 bc_screen);
+    glm::vec3 calculateFragmentTNormal(const glm::vec3 bc_screen);
+
 public:
     glm::mat4 modelMatrix;
     glm::mat4 viewMatrix;
     glm::mat4 projectionMatrix;
-    Texture *texture;
+    Texture *textureDiffuse;
+    Texture *textureNormal;
 
-    void vertexShader(ogz_util::VertexData &vertexData);
-    ogz_util::ColorRGB fragmentShader();
+    void vertexShader(ogz_util::VertexData *triangleVertices);
+    glm::vec3 Shader::fragmentShader(glm::vec3 fragmentNormal);
     Shader();
     ~Shader();
 };

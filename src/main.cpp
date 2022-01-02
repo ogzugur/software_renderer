@@ -7,12 +7,11 @@
 #include "viewer.h"
 #include <stb/stb_image.h>
 
-#define IMG_WIDHT 1280
-#define IMG_HEIGHT 720
+#define IMG_WIDHT 1024
+#define IMG_HEIGHT 1024
 
 Renderer renderer;
 Model dummy_model;
-Texture texture;
 Viewer viewer;
 Camera camera;
 Frame *frame;
@@ -39,9 +38,7 @@ int main()
     frame = new Frame(IMG_WIDHT, IMG_HEIGHT);
     renderer = Renderer(camera, *frame);
     renderer.rendererShader = mainShader;
-    texture = Texture("resources/models/Bulba_D.tga");
-    dummy_model = Model("resources/models/Bulbasaur1.obj");
-    dummy_model.texture = &texture;
+    dummy_model = Model("resources/models/head/head.obj");
 
     viewer.OpenWindow();
     Run();

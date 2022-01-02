@@ -23,5 +23,5 @@ public:
     float getDepthBufferValue(unsigned x, unsigned y);
     void writeFile(const char *file_name, bool is_flipped = false);
     void setDepthBufferValue(unsigned x, unsigned y, float depth_value);
-    bool setPixel(unsigned int x, unsigned int y, ogz_util::ColorRGB color);
+    bool setPixel(unsigned int x, unsigned int y, glm::vec3 color);
 };

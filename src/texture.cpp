@@ -11,17 +11,17 @@ Texture::Texture(const char *file_name)
 }
 
 //Returns [0-255] range color value
-ogz_util::ColorRGB Texture::getColorValueByUV(float u, float v)
+glm::vec3 Texture::getColorValueByUV(float u, float v)
 {
-    ogz_util::ColorRGB colorValue;
+    glm::vec3 colorValue;
 
     unsigned int i = (int)(u * width + 0.5f);
     unsigned int j = (int)(v * height + 0.5f);
 
     unsigned char *pixelOffset = texture_data + (i + width * j) * nrChannels;
-    colorValue.r = pixelOffset[0];
-    colorValue.g = pixelOffset[1];
-    colorValue.b = pixelOffset[2];
+    colorValue.x = pixelOffset[0];
+    colorValue.y = pixelOffset[1];
+    colorValue.z = pixelOffset[2];
 
     return colorValue;
 }

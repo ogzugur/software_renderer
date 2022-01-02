@@ -4,6 +4,7 @@ project(TINY_RENDERER)
 add_executable(TinyRenderer src/main.cpp
                             src/frame.cpp
                             src/model.cpp
+                            src/mesh.cpp
                             src/renderer.cpp
                             src/texture.cpp
                             src/camera.cpp

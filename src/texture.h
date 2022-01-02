@@ -1,5 +1,6 @@
 #pragma once
 #include <stb/stb_image.h>
+#include <string>
 #include "utility_structs.h"
 
 class Texture
@@ -14,5 +15,7 @@ public:
     ~Texture();
 
 public:
-    ogz_util::ColorRGB getColorValueByUV(float u, float v);
+    glm::vec3 Texture::getColorValueByUV(float u, float v);
+    std::string path;
+    ogz_util::textureType type;
 };

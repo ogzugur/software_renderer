@@ -6,11 +6,11 @@ void Frame::writeFile(const char *file_name, bool is_flipped)
     stbi_write_png(file_name, width, height, 3, color_buffer, width * 3);
 }
 
-bool Frame::setPixel(unsigned int x, unsigned int y, ogz_util::ColorRGB color)
+bool Frame::setPixel(unsigned int x, unsigned int y, glm::vec3 color)
 {
-    *(this->color_buffer + 3 * (y * width + x)) = color.r;
-    *(this->color_buffer + 3 * (y * width + x) + 1) = color.g;
-    *(this->color_buffer + 3 * (y * width + x) + 2) = color.b;
+    *(this->color_buffer + 3 * (y * width + x)) = color.x;
+    *(this->color_buffer + 3 * (y * width + x) + 1) = color.y;
+    *(this->color_buffer + 3 * (y * width + x) + 2) = color.z;
 
     return true;
 }

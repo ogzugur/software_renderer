@@ -1,0 +1,3 @@
+newmtl head_mtl
+map_Kd head_diff.tga
+norm head_nm_tangent.tga
