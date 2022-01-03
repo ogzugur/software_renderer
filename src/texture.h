@@ -15,7 +15,7 @@ public:
     ~Texture();
 
 public:
-    glm::vec3 Texture::getColorValueByUV(float u, float v);
+    glm::vec3 getColorValueByUV(float u, float v);
     std::string path;
     ogz_util::textureType type;
 };

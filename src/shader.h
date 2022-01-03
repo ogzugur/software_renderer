@@ -21,7 +21,7 @@ public:
     Texture *textureNormal;
 
     void vertexShader(ogz_util::VertexData *triangleVertices);
-    glm::vec3 Shader::fragmentShader(glm::vec3 fragmentNormal);
+    glm::vec3 fragmentShader(glm::vec3 fragmentNormal);
     Shader();
     ~Shader();
 };

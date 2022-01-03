@@ -7,7 +7,7 @@ class Mesh
 {
 public:
     Mesh();
-    Mesh::Mesh(std::vector<ogz_util::VertexData> vertices,std::vector<Texture> textures);
+    Mesh(std::vector<ogz_util::VertexData> vertices,std::vector<Texture> textures);
     ~Mesh();
 
 public:
