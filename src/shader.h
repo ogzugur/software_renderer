@@ -9,9 +9,10 @@ class Shader
 {
 private:
     ogz_util::VertexData triangleVertices[3];
+    glm::vec4 vertexPosClipSpace[3];
 
-    glm::vec2 calculatePixelTexCoord(const glm::vec3 bc_screen);
-    glm::vec3 calculateFragmentTNormal(const glm::vec3 bc_screen);
+    glm::vec2 calculatePixelTexCoord(const glm::vec3 bc_clip);
+    glm::vec3 calculateFragmentTNormal(const glm::vec3 bc_clip);
 
 public:
     glm::mat4 modelMatrix;
@@ -21,7 +22,7 @@ public:
     Texture *textureNormal;
 
     void vertexShader(ogz_util::VertexData *triangleVertices);
-    glm::vec3 fragmentShader(glm::vec3 fragmentNormal);
+    glm::vec3 fragmentShader(glm::vec3 barycentricCoordinate);
     Shader();
     ~Shader();
 };

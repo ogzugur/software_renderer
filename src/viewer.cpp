@@ -36,7 +36,7 @@ bool Viewer::OpenWindow()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    if (!(window = glfwCreateWindow(800, 800, "Window 1", NULL, NULL)))
+    if (!(window = glfwCreateWindow(1500, 1500, "Window 1", NULL, NULL)))
     {
         glfwTerminate();
         return false;
