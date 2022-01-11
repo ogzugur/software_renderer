@@ -41,13 +41,15 @@ void Frame::clearDepthColor()
     free(depth_buffer);
     this->color_buffer = (unsigned char *)calloc(width * height * 3, sizeof(unsigned char));
     this->depth_buffer = (float *)calloc(width * height, sizeof(float));
+    for (int i = width * height; i--; depth_buffer[i] = 1.0f)
+        ;
 }
 
 Frame::Frame(unsigned int width, unsigned int height)
 {
     this->color_buffer = (unsigned char *)calloc(width * height * 3, sizeof(unsigned char));
     this->depth_buffer = (float *)calloc(width * height, sizeof(float));
-    for (int i = width * height; i--; depth_buffer[i] = -std::numeric_limits<float>::max())
+    for (int i = width * height; i--; depth_buffer[i] = 1.0f)
         ;
     this->width = width;
     this->height = height;

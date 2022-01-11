@@ -8,10 +8,10 @@ class Frame
 {
 private:
     /* data */
-    float *depth_buffer;
     unsigned int width, height;
 
 public:
+    float *depth_buffer;
     unsigned char *color_buffer;
     Frame();
     Frame(unsigned int width, unsigned int height);

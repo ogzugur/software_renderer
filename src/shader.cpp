@@ -38,9 +38,10 @@ void Shader::vertexShader(ogz_util::VertexData *triangleVertices)
     for (size_t i = 0; i < 3; i++)
     {
         this->triangleVertices[i] = triangleVertices[i];
-        glm::vec4 vertex4D = projectionMatrix * viewMatrix * modelMatrix * glm::vec4(triangleVertices[i].vertex_pos, 1.0f);
-        triangleVertices[i].vertex_pos = glm::vec3(vertex4D) / vertex4D.w;
+        glm::vec4 vertex4D = projectionMatrix * viewMatrix * modelMatrix * triangleVertices[i].vertex_pos;
+        triangleVertices[i].vertex_pos = vertex4D / vertex4D.w;
         this->vertexPosClipSpace[i] = vertex4D;
+        triangleVertices[i].vertex_pos.w = vertex4D.w;
     }
 }
 

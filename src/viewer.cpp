@@ -6,7 +6,7 @@ Viewer::Viewer()
     this->imgHeight = 0;
 }
 
-Viewer::Viewer(GLuint imgWidth,GLuint imgHeight)
+Viewer::Viewer(GLuint imgWidth, GLuint imgHeight)
 {
     this->imgWidth = imgWidth;
     this->imgHeight = imgHeight;
@@ -16,7 +16,7 @@ Viewer::~Viewer()
 {
 }
 
-GLFWwindow* Viewer::getWindow()
+GLFWwindow *Viewer::getWindow()
 {
     return window;
 }
@@ -63,7 +63,7 @@ bool Viewer::OpenWindow()
     return true;
 }
 
-void Viewer::createTexture(unsigned char *dataPtr)
+void Viewer::createTexture(void *dataPtr)
 {
     glGenTextures(1, &textureID);
 
@@ -77,11 +77,11 @@ void Viewer::createTexture(unsigned char *dataPtr)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
-void Viewer::drawFulScreenQuad(unsigned char *frameData)
+void Viewer::drawFulScreenQuad(void *frameData)
 {
     fullScreenQuadShader->use();
     glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexSubImage2D(GL_TEXTURE_2D, 0,0,0, imgWidth, imgHeight, GL_RGB,GL_UNSIGNED_BYTE, frameData);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imgWidth, imgHeight, GL_RGB, GL_UNSIGNED_BYTE, (unsigned char *)frameData);
     glActiveTexture(GL_TEXTURE0);
     fullScreenQuadShader->SetUniform("frameTexture", 0);
     static GLuint gridVAO;

@@ -6,12 +6,12 @@ Camera::Camera(unsigned int viewportWidth, unsigned int viewportHeight)
     this->viewportHeight = viewportHeight;
     setCameraViewport(this->viewportWidth, this->viewportHeight);
 
-    this->cameraPos = glm::vec3(1.0, 0.5, 0.0);
-    this->cameraDirection = glm::vec3(0.0, 0.0, -2.0);
+    this->cameraPos = glm::vec3(0.0, 0.0, 5.0);
+    this->cameraDirection = glm::vec3(0.0, 0.0, 1.0);
     this->cameraUp = glm::vec3(0.0, 1.0, 0.0);
     this->cameraFOV = 60.0f;
-    this->cameraNear = -0.1f;
-    this->cameraFar = -10.0f;
+    this->cameraNear = 4.0f;
+    this->cameraFar = 6.0f;
 }
 
 Camera::~Camera()
@@ -20,11 +20,11 @@ Camera::~Camera()
 
 glm::mat4 Camera::getCameraProjectionMatrix()
 {
-    return glm::perspectiveRH(glm::radians(cameraFOV), (float)viewportWidth / viewportHeight, cameraNear, cameraFar);
+    return glm::perspective(glm::radians(cameraFOV), (float)viewportWidth / viewportHeight, cameraNear, cameraFar);
 }
 glm::mat4 Camera::getCameraViewMatrix()
 {
-    return glm::lookAtRH(cameraPos, cameraDirection, cameraUp);
+    return glm::lookAt(cameraPos, cameraDirection, cameraUp);
 }
 glm::mat4 Camera::getCameraViewportMatrix()
 {

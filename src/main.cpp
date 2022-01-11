@@ -38,7 +38,7 @@ int main()
     frame = new Frame(IMG_WIDHT, IMG_HEIGHT);
     renderer = Renderer(camera, *frame);
     renderer.rendererShader = mainShader;
-    dummy_model = Model("resources/models/head/head.obj");
+    dummy_model = Model("resources/models/cube/cube.obj");
 
     viewer.OpenWindow();
     Run();

@@ -12,7 +12,7 @@ namespace ogz_util
 
     struct VertexData
     {
-        glm::vec3 vertex_pos;
+        glm::vec4 vertex_pos;
         glm::vec2 vertex_tex_coord;
         glm::vec3 vertex_normal;
         glm::vec3 vertex_tangent;

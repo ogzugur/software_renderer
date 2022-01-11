@@ -75,23 +75,23 @@ glm::vec3 Renderer::barycentric(glm::vec2 p, glm::vec2 a, glm::vec2 b, glm::vec2
     return glm::vec3(u, v, w);
 }
 
-void Renderer::viewportTransform(glm::vec3 &p, int viewport_width, int viewport_height)
+void Renderer::viewportTransform(glm::vec4 &p, int viewport_width, int viewport_height)
 {
     p.x = (int)((p.x + 1) / 2 * (viewport_width - 1));
     p.y = (int)((p.y + 1) / 2 * (viewport_height - 1));
 }
 
 float Renderer::calculatePixelDepth(const glm::vec3 bc_screen,
-                                    const glm::vec3 p0,
-                                    const glm::vec3 p1,
-                                    const glm::vec3 p2)
+                                    const glm::vec4 p0,
+                                    const glm::vec4 p1,
+                                    const glm::vec4 p2)
 {
     float pixel_depth = 0;
     pixel_depth = p0.z * bc_screen.x +
                   p1.z * bc_screen.y +
                   p2.z * bc_screen.z;
 
-    return pixel_depth;
+     return pixel_depth;
 }
 
 void Renderer::drawTriangle(ogz_util::VertexData p0, ogz_util::VertexData p1, ogz_util::VertexData p2, Texture &texture)
@@ -99,8 +99,8 @@ void Renderer::drawTriangle(ogz_util::VertexData p0, ogz_util::VertexData p1, og
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     ogz_util::VertexData triangleVertices[3] = {p0,p1,p2};
 
-    modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, -2.0));
-    modelMatrix = glm::rotate(modelMatrix,glm::radians(rotateValue),glm::vec3(0.0f, 1.0f, 0.0f));
+    modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 0.0));
+    //modelMatrix = glm::rotate(modelMatrix,glm::radians(rotateValue),glm::vec3(1.0f, 0.0f, 0.0f));
     glm::mat4 viewMatrix = camera->getCameraViewMatrix();
     glm::mat4 projectionMatrix = camera->getCameraProjectionMatrix();
 
@@ -136,7 +136,7 @@ void Renderer::drawTriangle(ogz_util::VertexData p0, ogz_util::VertexData p1, og
                 continue;
             P.z = calculatePixelDepth(bc_screen, triangleVertices[0].vertex_pos, triangleVertices[1].vertex_pos, triangleVertices[2].vertex_pos);
 
-            if (pixel_depth_value < P.z)
+            if (pixel_depth_value > P.z)
             {
                 this->frame->setDepthBufferValue(P.x, P.y, P.z);
                 fragmentColor = rendererShader.fragmentShader(bc_screen);

@@ -47,7 +47,7 @@ Mesh Model::processMesh(tinyobj::shape_t shape)
             tinyobj::real_t vy = this->attrib.vertices[3 * size_t(idx.vertex_index) + 1];
             tinyobj::real_t vz = this->attrib.vertices[3 * size_t(idx.vertex_index) + 2];
 
-            tempVertex[v].vertex_pos = glm::vec3(vx, vy, vz);
+            tempVertex[v].vertex_pos = glm::vec4(vx, vy, vz,1.0f);
 
             // Check if `normal_index` is zero or positive. negative = no normal data
             if (idx.normal_index >= 0)

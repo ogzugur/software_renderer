@@ -10,13 +10,13 @@ class Renderer
 {
 private:
     glm::vec3 barycentric(glm::vec2 p, glm::vec2 a, glm::vec2 b, glm::vec2 c);
-    void viewportTransform(glm::vec3 &p, int viewport_width, int viewport_height);
+    void viewportTransform(glm::vec4 &p, int viewport_width, int viewport_height);
     void plotLine(glm::vec2 p0, glm::vec2 p1, glm::vec3 color);
 
     float calculatePixelDepth(const glm::vec3 bc_screen,
-                              const glm::vec3 p0,
-                              const glm::vec3 p1,
-                              const glm::vec3 p2);
+                              const glm::vec4 p0,
+                              const glm::vec4 p1,
+                              const glm::vec4 p2);
 
     void drawTriangle(ogz_util::VertexData p0,
                       ogz_util::VertexData p1,

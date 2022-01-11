@@ -10,13 +10,13 @@ private:
     GLuint textureID;
     GLuint imgWidth, imgHeight;
 
-    void createTexture(unsigned char *dataPtr);
+    void createTexture(void *dataPtr);
 public:
     Viewer();
     Viewer(GLuint imgWidth,GLuint imgHeight);
     ~Viewer();
     
-    void drawFulScreenQuad(unsigned char *frameData);
+    void drawFulScreenQuad(void *frameData);
     GLFWwindow* getWindow();
     bool OpenWindow();
 };
