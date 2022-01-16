@@ -29,5 +29,6 @@ public:
     Model(std::string inputfile);
     ~Model();
     Texture *texture;
+    glm::mat4 modelMatrix;
     std::vector<Mesh> meshes;
 };

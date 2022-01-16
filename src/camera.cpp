@@ -6,8 +6,8 @@ Camera::Camera(unsigned int viewportWidth, unsigned int viewportHeight)
     this->viewportHeight = viewportHeight;
     setCameraViewport(this->viewportWidth, this->viewportHeight);
 
-    this->cameraPos = glm::vec3(0.0, 0.0, 5.0);
-    this->cameraDirection = glm::vec3(0.0, 0.0, 1.0);
+    this->cameraPos = glm::vec3(0.0, 0.0, 4.0);
+    this->cameraDirection = glm::vec3(0.0, 0.0, 0.0);
     this->cameraUp = glm::vec3(0.0, 1.0, 0.0);
     this->cameraFOV = 60.0f;
     this->cameraNear = 4.0f;

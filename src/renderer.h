@@ -23,8 +23,6 @@ private:
                       ogz_util::VertexData p2,
                       Texture &texture);
 
-    float rotateValue = 0;
-
 public:
     Camera *camera;
     Frame *frame;

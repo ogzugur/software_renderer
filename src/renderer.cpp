@@ -15,7 +15,13 @@ Renderer::~Renderer()
 
 void Renderer::drawModel(Model &model)
 {
-    rotateValue += 1;
+    glm::mat4 viewMatrix = camera->getCameraViewMatrix();
+    glm::mat4 projectionMatrix = camera->getCameraProjectionMatrix();
+
+    rendererShader.viewMatrix = viewMatrix;
+    rendererShader.projectionMatrix = projectionMatrix;
+ 
+    rendererShader.modelMatrix = model.modelMatrix;
 
     // Loop over shapes
     for (size_t s = 0; s < model.meshes.size(); s++)
@@ -91,22 +97,12 @@ float Renderer::calculatePixelDepth(const glm::vec3 bc_screen,
                   p1.z * bc_screen.y +
                   p2.z * bc_screen.z;
 
-     return pixel_depth;
+    return pixel_depth;
 }
 
 void Renderer::drawTriangle(ogz_util::VertexData p0, ogz_util::VertexData p1, ogz_util::VertexData p2, Texture &texture)
 {
-    glm::mat4 modelMatrix = glm::mat4(1.0f);
-    ogz_util::VertexData triangleVertices[3] = {p0,p1,p2};
-
-    modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 0.0));
-    //modelMatrix = glm::rotate(modelMatrix,glm::radians(rotateValue),glm::vec3(1.0f, 0.0f, 0.0f));
-    glm::mat4 viewMatrix = camera->getCameraViewMatrix();
-    glm::mat4 projectionMatrix = camera->getCameraProjectionMatrix();
-
-    rendererShader.modelMatrix = modelMatrix;
-    rendererShader.viewMatrix = viewMatrix;
-    rendererShader.projectionMatrix = projectionMatrix;
+    ogz_util::VertexData triangleVertices[3] = {p0, p1, p2};
 
     rendererShader.vertexShader(triangleVertices);
 

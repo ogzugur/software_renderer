@@ -1,5 +1,13 @@
 #include "viewer.h"
 
+#ifdef __APPLE__
+    #define VIEWER_WIDTH 800
+    #define VIEWER_HEIGHT 800
+#elif _WIN32
+    #define VIEWER_WIDTH 1500
+    #define VIEWER_HEIGHT 1500
+#endif
+
 Viewer::Viewer()
 {
     this->imgWidth = 0;
@@ -36,7 +44,7 @@ bool Viewer::OpenWindow()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    if (!(window = glfwCreateWindow(1500, 1500, "Window 1", NULL, NULL)))
+    if (!(window = glfwCreateWindow(VIEWER_WIDTH, VIEWER_HEIGHT, "Window 1", NULL, NULL)))
     {
         glfwTerminate();
         return false;
@@ -82,6 +90,24 @@ void Viewer::drawFulScreenQuad(void *frameData)
     fullScreenQuadShader->use();
     glBindTexture(GL_TEXTURE_2D, textureID);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imgWidth, imgHeight, GL_RGB, GL_UNSIGNED_BYTE, (unsigned char *)frameData);
+    glActiveTexture(GL_TEXTURE0);
+    fullScreenQuadShader->SetUniform("frameTexture", 0);
+    static GLuint gridVAO;
+    if (!gridVAO)
+    {
+        glGenVertexArrays(1, &gridVAO);
+    }
+
+    glBindVertexArray(gridVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+}
+
+void Viewer::drawDepthBuffer(void *depthData)
+{
+    fullScreenQuadShader->use();
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imgWidth, imgHeight, GL_RED, GL_FLOAT, (float *)depthData);
     glActiveTexture(GL_TEXTURE0);
     fullScreenQuadShader->SetUniform("frameTexture", 0);
     static GLuint gridVAO;

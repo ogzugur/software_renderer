@@ -16,6 +16,7 @@ public:
     Viewer(GLuint imgWidth,GLuint imgHeight);
     ~Viewer();
     
+    void drawDepthBuffer(void *depthData);
     void drawFulScreenQuad(void *frameData);
     GLFWwindow* getWindow();
     bool OpenWindow();

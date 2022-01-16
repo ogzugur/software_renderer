@@ -55,11 +55,11 @@ glm::vec3 Shader::fragmentShader(glm::vec3 barycentricCoordinate)
     glm::vec3 textureColor = textureDiffuse->getColorValueByUV(texCoord.x, texCoord.y);
 
     fragmentNormal = glm::vec3(modelMatrix * glm::vec4(fragmentNormal, 0.0f));
-    float intensity = glm::dot(glm::vec3(fragmentNormal), glm::normalize(glm::vec3(1.0, 0.0, 0.0)));
+    float intensity = glm::dot(glm::vec3(fragmentNormal), glm::normalize(glm::vec3(1.0, 1.0, 0.0)));
     if (intensity < 0)
         intensity = 0;
 
-    fragColor = textureColor;
+    fragColor = intensity * textureColor;
 
     return fragColor;
 }
