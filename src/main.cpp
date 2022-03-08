@@ -15,7 +15,7 @@ float rotateValue = 0;
 Renderer renderer;
 Model dummy_model;
 Model cube_model;
-Viewer viewer;
+Viewer *viewer;
 Camera camera;
 Frame *frame;
 
@@ -24,11 +24,18 @@ void Run()
     float flPreviousTime = 0;
     float flCurrentTime = (float)glfwGetTime();
 
-    while (!glfwWindowShouldClose(viewer.getWindow()))
+    while (!glfwWindowShouldClose(viewer->getWindow()))
     {
+        viewer->isMouseMoving = false;
+        glfwPollEvents();
         flPreviousTime = flCurrentTime;
         flCurrentTime = (float)glfwGetTime();
         float dt = flCurrentTime - flPreviousTime;
+        if (viewer->leftMousePressed && viewer->isMouseMoving)
+        {
+            camera.calculateArcBallPosition(viewer->xoffset, viewer->yoffset);
+        }
+
 
         rotateValue = rotateValue + (50 * dt);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -40,9 +47,8 @@ void Run()
         cube_model.modelMatrix = glm::translate(cube_model.modelMatrix, glm::vec3(-1.5, 0.0, 0.0));
         cube_model.modelMatrix = glm::scale(cube_model.modelMatrix, glm::vec3(0.4));
         renderer.drawModel(cube_model);
-        viewer.drawFulScreenQuad(frame->color_buffer);
-        glfwPollEvents();
-        glfwSwapBuffers(viewer.getWindow());
+        viewer->drawFulScreenQuad(frame->color_buffer);
+        glfwSwapBuffers(viewer->getWindow());
     }
     glfwTerminate();
 }
@@ -50,7 +56,7 @@ void Run()
 int main()
 {
     Shader mainShader = Shader();
-    viewer = Viewer(IMG_WIDHT, IMG_HEIGHT);
+    viewer = new Viewer(IMG_WIDHT, IMG_HEIGHT);
     camera = Camera(IMG_WIDHT, IMG_HEIGHT);
     frame = new Frame(IMG_WIDHT, IMG_HEIGHT);
     renderer = Renderer(camera, *frame);
@@ -58,7 +64,7 @@ int main()
     dummy_model = Model("resources/models/head/head.obj");
     cube_model = Model("resources/models/cube/cube.obj");
 
-    viewer.OpenWindow();
+    viewer->OpenWindow();
     Run();
     delete frame;
 }

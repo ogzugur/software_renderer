@@ -8,7 +8,6 @@ class Camera
 private:
     glm::mat4 viewMatrix;
     glm::mat4 projectionMatrix;
-    glm::mat4 viewportMatrix;
 
     unsigned int viewportWidth;
     unsigned int viewportHeight;
@@ -20,14 +19,16 @@ private:
     float cameraNear;
     float cameraFar;
 
+    void updateCameraViewMatrix();
+    glm::vec3 GetViewDir();
+    glm::vec3 GetRightVector();
+
 public:
     Camera(){};
     Camera(unsigned int viewportWidth, unsigned int viewportHeight);
     ~Camera();
 
-    void setCameraViewport(unsigned int w, unsigned int h);
-
+    void calculateArcBallPosition(float xOffset, float yOffset);
     glm::mat4 getCameraProjectionMatrix();
     glm::mat4 getCameraViewMatrix();
-    glm::mat4 getCameraViewportMatrix();
 };

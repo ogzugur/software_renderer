@@ -7,6 +7,49 @@
     #define VIEWER_WIDTH 1500
     #define VIEWER_HEIGHT 1500
 #endif
+Viewer* Viewer::s_pViewer = NULL;
+
+void Viewer::SetMousePos(double x, double y)
+{
+	if (m_bFirstMouse)
+	{
+		m_dLastX = x;
+		m_dLastY = y;
+		m_bFirstMouse = false;
+	}
+
+	xoffset = x - m_dLastX;
+	yoffset = m_dLastY - y; // reversed since y-coordinates go from bottom to top
+
+	m_dLastX = x;
+	m_dLastY = y;
+}
+
+void Viewer::MouseCallback(GLFWwindow* window, double xpos, double ypos)
+{
+    Get()->isMouseMoving = true;
+	if (Get()->leftMousePressed)
+	{
+		Get()->SetMousePos(xpos, ypos);
+	}
+    else 
+	{
+		Get()->m_bFirstMouse = true;
+	}
+}
+
+void Viewer::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+        Get()->leftMousePressed = true;
+    }
+         
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+    {
+        Get()->leftMousePressed = false;
+    }
+}
 
 Viewer::Viewer()
 {
@@ -16,6 +59,7 @@ Viewer::Viewer()
 
 Viewer::Viewer(GLuint imgWidth, GLuint imgHeight)
 {
+    s_pViewer = this;
     this->imgWidth = imgWidth;
     this->imgHeight = imgHeight;
 }
@@ -51,6 +95,8 @@ bool Viewer::OpenWindow()
     }
 
     glfwMakeContextCurrent(window);
+    glfwSetCursorPosCallback(window, MouseCallback);
+    glfwSetMouseButtonCallback(window, MouseButtonCallback);
     glfwSwapInterval(false);
 
     glfwSetTime(0.0);

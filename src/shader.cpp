@@ -59,7 +59,7 @@ glm::vec3 Shader::fragmentShader(glm::vec3 barycentricCoordinate)
     if (intensity < 0)
         intensity = 0;
 
-    fragColor = intensity * textureColor;
+    fragColor = textureColor;
 
     return fragColor;
 }
