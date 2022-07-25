@@ -29,6 +29,7 @@ public:
     ~Camera();
 
     void calculateArcBallPosition(float xOffset, float yOffset);
+    void calculateCameraZoom(float scrollOffset);
     glm::mat4 getCameraProjectionMatrix();
     glm::mat4 getCameraViewMatrix();
 };

@@ -12,7 +12,7 @@ Camera::Camera(unsigned int viewportWidth, unsigned int viewportHeight)
     this->cameraUp = glm::vec3(0.0, 1.0, 0.0);
     this->cameraFOV = 60.0f;
     this->cameraNear = 4.0f;
-    this->cameraFar = 6.0f;
+    this->cameraFar = 20.0f;
 }
 
 Camera::~Camera()
@@ -52,6 +52,11 @@ void Camera::calculateArcBallPosition(float xOffset, float yOffset)
 
     // Update the camera view (we keep the same lookat and the same up vector)
     cameraPos = finalPosition;
+}
+
+void Camera::calculateCameraZoom(float scrollOffset)
+{
+    cameraPos = cameraPos + ((cameraPos - cameraDirection )* scrollOffset);  
 }
 void Camera::updateCameraViewMatrix()
 {

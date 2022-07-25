@@ -4,8 +4,8 @@
     #define VIEWER_WIDTH 800
     #define VIEWER_HEIGHT 800
 #elif _WIN32
-    #define VIEWER_WIDTH 1500
-    #define VIEWER_HEIGHT 1500
+    #define VIEWER_WIDTH 1024
+    #define VIEWER_HEIGHT 1024
 #endif
 Viewer* Viewer::s_pViewer = NULL;
 
@@ -23,6 +23,7 @@ void Viewer::SetMousePos(double x, double y)
 
 	m_dLastX = x;
 	m_dLastY = y;
+    Get()->copyCamera->calculateArcBallPosition(xoffset, yoffset);
 }
 
 void Viewer::MouseCallback(GLFWwindow* window, double xpos, double ypos)
@@ -49,6 +50,13 @@ void Viewer::MouseButtonCallback(GLFWwindow* window, int button, int action, int
     {
         Get()->leftMousePressed = false;
     }
+}
+
+void Viewer::MouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    Get()->scrollOffset = -(yoffset * 0.15);
+    printf("scrollOffset: %f\n", Get()->scrollOffset);
+    Get()->copyCamera->calculateCameraZoom(Get()->scrollOffset);
 }
 
 Viewer::Viewer()
@@ -97,6 +105,7 @@ bool Viewer::OpenWindow()
     glfwMakeContextCurrent(window);
     glfwSetCursorPosCallback(window, MouseCallback);
     glfwSetMouseButtonCallback(window, MouseButtonCallback);
+    glfwSetScrollCallback(window, MouseScrollCallback);
     glfwSwapInterval(false);
 
     glfwSetTime(0.0);
@@ -111,7 +120,7 @@ bool Viewer::OpenWindow()
     std::cout << glGetString(GL_RENDERER) << std::endl;
     std::cout << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
-    fullScreenQuadShader = new CShader("resources/shaders/fullScreenQuadShader.vert", "resources/shaders/fullScreenQuadShader.frag", "quadShader");
+    fullScreenQuadShader = new CShader("../resources/shaders/fullScreenQuadShader.vert", "../resources/shaders/fullScreenQuadShader.frag", "quadShader");
     createTexture(NULL);
 
     return true;
